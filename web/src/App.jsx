@@ -1,103 +1,50 @@
 import { useEffect, useState } from "react";
-import Pitch from "./Pitch.jsx";
+import Sidebar from "./Sidebar.jsx";
+import Topbar from "./Topbar.jsx";
+import PlayerScope from "./PlayerScope.jsx";
+import ClubScope from "./ClubScope.jsx";
+import PositionScope from "./PositionScope.jsx";
+import { getJSON } from "./lib.js";
 
-const METRICS = {
-  xt: {
-    label: "xT (위협 생성)",
-    endpoint: "/api/players/xt",
-    valueKey: "xt_per_match",
-    valueLabel: "경기당 xT",
-    desc: "공을 더 위험한 구역으로 옮긴 정도. 전진 패스·운반 위주.",
-  },
-  vaep: {
-    label: "VAEP (행동 가치)",
-    endpoint: "/api/players/vaep",
-    valueKey: "vaep_p90",
-    valueLabel: "VAEP / 90분",
-    desc: "득점 확률↑ + 실점 확률↓로 환산한 종합 가치. 수비·빌드업까지 포함.",
-  },
+const TITLES = {
+  player: { t: "선수 랭킹", s: "교차검증 VAEP/90 · 선수를 클릭하면 상세를 봅니다", c: "선수" },
+  club: { t: "구단 분석", s: "경기당 위협 생성(xT) 기준 구단 비교", c: "구단" },
+  position: { t: "포지션 분석", s: "포지션별 평균 기여 (실측)", c: "포지션" },
 };
 
 export default function App() {
-  const [metric, setMetric] = useState("xt");
-  const [rows, setRows] = useState([]);
+  const [theme, setTheme] = useState("light");
+  const [scope, setScope] = useState("player");
+  const [metric, setMetric] = useState("vaep"); // vaep | xt
+  const [players, setPlayers] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [pitchData, setPitchData] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const cfg = METRICS[metric];
 
   useEffect(() => {
-    fetch(cfg.endpoint + "?limit=25")
-      .then((r) => r.json())
-      .then(setRows)
-      .catch(() => setRows([]));
-  }, [metric]);
+    document.body.style.background = theme === "dark" ? "#13151a" : "#f4f2ee";
+  }, [theme]);
 
-  function pickPlayer(name) {
-    setSelected(name);
-    setLoading(true);
-    fetch(`/api/players/${encodeURIComponent(name)}/xt-actions?top=200`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setPitchData(d))
-      .catch(() => setPitchData(null))
-      .finally(() => setLoading(false));
-  }
+  useEffect(() => {
+    getJSON("/players/overview?metric=vaep&limit=30")
+      .then((d) => { setPlayers(d); if (d.length && !selected) setSelected(d[0].player); })
+      .catch(() => setPlayers([]));
+  }, []);
+
+  const ti = TITLES[scope];
+  const count = scope === "player" ? `${players.length}명`
+    : scope === "club" ? "전 구단" : "포지션별";
 
   return (
-    <div className="app">
-      <header>
-        <h1>FA — 풋볼 애널리틱스</h1>
-        <p className="sub">분데스리가 2023/24 · 레버쿠젠 시즌 · 맥락의 상실을 푸는 첫 조각</p>
-      </header>
-
-      <div className="metric-tabs">
-        {Object.entries(METRICS).map(([key, m]) => (
-          <button
-            key={key}
-            className={key === metric ? "tab active" : "tab"}
-            onClick={() => setMetric(key)}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
-      <p className="metric-desc">{cfg.desc}</p>
-
-      <div className="layout">
-        <section className="ranking">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>선수</th>
-                <th className="num">{cfg.valueLabel}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => (
-                <tr
-                  key={r.player}
-                  className={r.player === selected ? "row sel" : "row"}
-                  onClick={() => pickPlayer(r.player)}
-                >
-                  <td className="rank">{i + 1}</td>
-                  <td>{r.player}</td>
-                  <td className="num">{r[cfg.valueKey]?.toFixed(3)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
-        <section className="viz">
-          {loading && <div className="placeholder">불러오는 중…</div>}
-          {!loading && !pitchData && (
-            <div className="placeholder">선수를 클릭하면 위협 생성 패스맵이 나타납니다.</div>
-          )}
-          {!loading && pitchData && <Pitch data={pitchData} />}
-        </section>
-      </div>
+    <div className="fa-app" data-theme={theme}
+      style={{ display: "grid", gridTemplateColumns: "248px 1fr", height: "100vh", minWidth: 1240, color: "var(--ink)", background: "var(--bg)" }}>
+      <Sidebar scope={scope} setScope={setScope} metric={metric} setMetric={setMetric} />
+      <main style={{ overflow: "auto", background: "var(--bg)" }}>
+        <Topbar title={ti.t} sub={ti.s} count={count} theme={theme} toggleTheme={() => setTheme(theme === "dark" ? "light" : "dark")} />
+        {scope === "player" && (
+          <PlayerScope players={players} metric={metric} selected={selected} setSelected={setSelected} />
+        )}
+        {scope === "club" && <ClubScope />}
+        {scope === "position" && <PositionScope />}
+      </main>
     </div>
   );
 }

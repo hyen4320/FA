@@ -1,61 +1,41 @@
-:root {
-  --bg: #0d1117;
-  --panel: #161b22;
-  --border: #30363d;
-  --text: #e6edf3;
-  --muted: #8b949e;
-  --accent: #39d353;
+/* 테마 변수는 디자인(FA 분석 콘솔.dc.html)에서 그대로 가져옴 */
+.fa-app {
+  --bg:#f4f2ee; --panel:#ffffff; --panel2:#faf9f6; --line:#e6e3dc; --line2:#f3f1ec; --line3:#ece9e3;
+  --ink:#232529; --ink2:#4a4e54; --ink3:#5a5e64; --muted:#6b7077; --faint:#9a9ea4; --faint2:#b0aca2;
+  --track:#efece6; --seg:#f0eee9; --chip:#f4f2ee; --accent:#2f8f6b; --accent-ink:#1f6b50;
+  --accent-tint:#eaf4ef; --accent-bd:#cfe6dc; --amber:#c2772f; --amber2:#d98a3d; --amber-bar:#e3a663;
+  --bar-muted:#c4c7cd; --bar-muted2:#b9bcc2; --opp-ink:#8a8f97; --invert:#232529; --on-accent:#ffffff;
+  --scroll:#d9d6cf; --photo1:#efece6; --photo2:#f6f4ef; --pitch-bg:#eef4f0; --pitch-line:#cdd9d1;
+}
+.fa-app[data-theme="dark"] {
+  --bg:#13151a; --panel:#1b1e24; --panel2:#181b21; --line:#2b3039; --line2:#23262d; --line3:#262a31;
+  --ink:#e7e9ec; --ink2:#c4c8cf; --ink3:#aab0b8; --muted:#9aa0aa; --faint:#7b818b; --faint2:#5e646e;
+  --track:#262b33; --seg:#22262d; --chip:#22262d; --accent:#35c98a; --accent-ink:#5ad79e;
+  --accent-tint:#16271f; --accent-bd:#2c5a44; --amber:#dca15a; --amber2:#e0a45a; --amber-bar:#b67f43;
+  --bar-muted:#3c424b; --bar-muted2:#454b54; --opp-ink:#8a909a; --invert:#e7e9ec; --on-accent:#0f1712;
+  --scroll:#3a4049; --photo1:#22262d; --photo2:#1b1f25; --pitch-bg:#10161a; --pitch-line:#2b3b33;
 }
 
 * { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin: 0; font-family: Archivo, sans-serif; }
+.num { font-variant-numeric: tabular-nums; }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--scroll, #d9d6cf); border-radius: 99px;
+  border: 3px solid var(--bg, #f4f2ee);
 }
 
-.app { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+.serif { font-family: Newsreader, serif; }
+.mono { font-family: "JetBrains Mono", monospace; }
 
-header h1 { margin: 0 0 4px; font-size: 24px; }
-.sub { margin: 0; color: var(--muted); font-size: 14px; }
-
-.metric-tabs { display: flex; gap: 8px; margin: 24px 0 8px; }
-.tab {
-  background: var(--panel); color: var(--text);
-  border: 1px solid var(--border); border-radius: 8px;
-  padding: 8px 16px; cursor: pointer; font-size: 14px;
+/* 예시(미구축) 배지 */
+.mock-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 600; letter-spacing: .04em;
+  color: var(--amber); background: transparent;
+  border: 1px solid var(--amber); border-radius: 99px; padding: 1px 7px;
 }
-.tab.active { border-color: var(--accent); color: var(--accent); }
-.metric-desc { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
 
-.layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
-
-.ranking {
-  background: var(--panel); border: 1px solid var(--border);
-  border-radius: 10px; overflow: hidden;
-}
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-thead th {
-  text-align: left; padding: 10px 12px; color: var(--muted);
-  font-weight: 600; border-bottom: 1px solid var(--border); font-size: 12px;
-}
-th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
-.row { cursor: pointer; }
-.row td { padding: 8px 12px; border-bottom: 1px solid #21262d; }
-.row:hover { background: #1c2430; }
-.row.sel { background: #16301f; }
-.rank { color: var(--muted); width: 28px; }
-
-.viz {
-  background: var(--panel); border: 1px solid var(--border);
-  border-radius: 10px; padding: 16px; min-height: 420px;
-  display: flex; align-items: center; justify-content: center;
-}
-.placeholder { color: var(--muted); font-size: 14px; text-align: center; }
-
-.pitch-wrap { width: 100%; }
-.pitch-svg { width: 100%; height: auto; display: block; border-radius: 8px; }
-.pitch-caption { margin-top: 10px; font-size: 13px; color: var(--text); }
-.pitch-caption .hint { color: var(--muted); }
+button { font-family: inherit; }

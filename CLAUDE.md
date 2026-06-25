@@ -60,8 +60,11 @@ data\       parquet/duckdb (git ignore)
 **api/ (FastAPI, 조회 전용)**
 - `main.py` — 시작 시 xT를 1회 계산해 메모리 캐시, VAEP는 CSV 로드. 엔드포인트: `/api/players/xt`, `/api/players/vaep`, `/api/players/{player}/xt-actions`.
 
-**web/ (Vite + React + D3)**
-- xT/VAEP 랭킹 테이블 + 선수 클릭 시 D3 피치에 위협 생성 행동 렌더. `/api`는 vite가 8000으로 프록시.
+**web/ (Vite + React)**
+- Claude Design(`FA 분석 콘솔.dc.html`)을 React로 포팅한 **맥락 분석 콘솔**. 라이트/다크 테마, 사이드바(선수/구단/포지션 스코프), Newsreader/Archivo 폰트.
+- 컴포넌트: `App`(셸·상태) · `Sidebar` · `Topbar` · `PlayerScope`(랭킹+상세: 기여도 분해 워터폴·피치·행동구성·백분위) · `ClubScope` · `PositionScope` · `Pitch`(SVG, 테마 변수) · `lib.js`(헬퍼+예시 모델).
+- `/api`는 vite가 8000으로 프록시.
+- ⚠️ **실데이터 vs 예시 경계**: 선수 랭킹(VAEP/90)·피치 패스맵·행동구성·포지션/구단 집계는 **실측**. **맥락 보정 분해(동료/리그/상대), 백분위, 경기별 추이, 포지션 차감%는 예시값**(`lib.js`) — 모델 미구축이라 UI에 `예시·미구축` 배지 표시. 보정 모델(RAPM/리그변환) 만들면 `lib.js`만 교체.
 
 **주의**
 - DuckDB 적재 시 중첩 list/dict 컬럼은 문자열로 직렬화됨. SPADL/VAEP처럼 원본 구조가 필요하면 DuckDB 대신 socceraction 로더로 재취득(vaep_rating.py가 그렇게 함).
