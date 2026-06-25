@@ -1,0 +1,10 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# 데이터 산출물 (받아오거나 생성됨 — 커밋 안 함)
+data/
+*.duckdb
+*.parquet
+*.png
